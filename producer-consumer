@@ -1,0 +1,63 @@
+#include<stdio.h>
+#include<semaphore.h>
+#include<pthread.h>
+#include<unistd.h>
+#define N 5
+int buffer[N];
+int front=0,rear=0;
+void producer(int);
+void consumer(int);
+int random();
+sem_t mutex,empty,full;
+int pno,cno,itempro,itemcon,k=10;
+void main()
+{
+	int i;
+	sem_init(&mutex,0,1);
+	sem_init(&empty,0,N);
+	sem_init(&full,0,0);
+	printf("Enter number of producers : ");
+	scanf("%d",&pno);
+	printf("Enter number of consumers: ");
+	scanf("%d",&cno);
+    pthread_t prod[pno],cons[cno];
+	for(i=1;i<=pno;i++)
+		pthread_create(&prod[i],0,(void*)producer,(void*)i);
+	for(i=1;i<=cno;i++)
+		pthread_create(&cons[i],0,(void*)consumer,(void*)i);
+	for(i=1;i<=pno;i++)
+		pthread_join(prod[i],NULL);
+	for(i=1;i<=cno;i++)
+		pthread_join(cons[i],NULL);
+}
+void producer(int i){
+	while(1)
+	{
+	     itempro=k++;
+		//itempro=random();
+		printf("Producer %d produces item %d\n",i,/*itempro*/k);
+		sleep(1);
+		sem_wait(&empty);
+		sem_wait(&mutex);
+		rear=(rear%N)+1;
+		buffer[rear]=itempro;
+		sem_post(&mutex);
+		sem_post(&full);
+	}
+}
+void consumer(int i){
+	while(1){
+		sem_wait(&full);
+		sem_wait(&mutex);
+		front=(front%N)+1;
+		itemcon=buffer[front];
+		sem_post(&mutex);
+		sem_post(&empty);
+		printf("Consumer %d consumes item %d\n",i,itemcon);
+		sleep(1);
+	}
+}/*
+int random(){
+	k++;
+	return k;
+}*/
