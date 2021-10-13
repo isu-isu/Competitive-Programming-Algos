@@ -1,0 +1,94 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define MAX 6
+
+void sort(int p[],int prio[],int b_time[],int n);
+
+void main(){
+
+	int n,b_time[MAX],p[MAX],prio[MAX],w_time[MAX]={0},t_time[MAX]={0};
+	float avg_w_time=0.0,avg_t_time=0.0;
+
+	printf("  Priority Scheduling");
+	printf("\nEnter the no.of processes: ");
+	scanf("%d",&n);
+
+	
+	for(int i=0;i<n;i++){
+		
+    printf("\nProcess : %d  Burst Time & Priority: ",i+1);
+		scanf("%d",&b_time[i]);
+   
+    scanf("%d",&prio[i]);
+		p[i]=i+1;	
+		
+	}
+		sort(p,prio,b_time,n);
+
+	for(int i=0;i<n;i++){
+		w_time[i+1]=w_time[i]+b_time[i];
+		t_time[i]=w_time[i]+b_time[i];
+		avg_w_time+=w_time[i];
+		avg_t_time+=t_time[i];
+	}
+		avg_w_time/=n;
+		avg_t_time/=n;
+		
+	
+	printf("\nProcess\t| Burst Time\t| Waiting Time\t| Turnaround Time\n");
+	printf("----------------------------------------------------------\n");
+	for(int i=0;i<n;i++){
+		printf("P%d\t| \t%d\t| \t%d\t| \t%d\n",p[i],b_time[i],w_time[i],t_time[i]);
+	}
+
+	printf("\nAverage Waiting Time = %.2f",avg_w_time);
+	printf("\nAverage Turn Around Time = %.2f\n",avg_t_time);
+	
+	
+		
+	printf("\n\t\t\tGANTT CHART\n");
+
+	for(int i=0;i<n;i++){
+		printf("----------------");
+	}
+	printf("-\n");
+	for(int i=0;i<n;i++){
+		printf("|\tP%d\t",p[i]);
+	}
+	printf("|\n");
+	for(int i=0;i<n;i++){
+		printf("----------------");
+	}
+	printf("-\n");
+	for(int i=0;i<n;i++){
+		printf("%d\t\t",w_time[i]);
+	}
+	printf("%d\n",w_time[n-1]+b_time[n-1]);
+
+}
+
+void sort(int p[],int prio[],int b_time[],int n){
+	
+	int temp;
+
+	for(int i=1;i<n;i++){
+		for(int j=0;j<n-i;j++){
+			if(prio[j]>prio[j+1]){
+				
+				temp=prio[j];
+				prio[j]=prio[j+1];
+				prio[j+1]=temp;
+
+				temp=b_time[j];
+				b_time[j]=b_time[j+1];
+				b_time[j+1]=temp;
+
+				temp=p[j];
+				p[j]=p[j+1];
+				p[j+1]=temp;
+							
+			}		
+		}
+	}
+
+}
